@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>饮食日历 · 批量备餐</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="app-wrapper">
+        <!-- ===== 左侧边栏 ===== -->
+        <!-- ===== 左侧边栏 ===== -->
+        <aside class="sidebar sidebar-left">
+            <div class="sidebar-title">📌 功能</div>
+            <div class="sidebar-content">
+                <!-- ✅ 批量备餐 - 有功能 -->
+                <div class="sidebar-box meal-prep active-box" id="mealPrepTrigger">
+                    <span class="icon">🍱</span>
+                    <span class="label">批量备餐</span>
+                </div>
+                <!-- ✅ 休假 - 有功能 -->
+                <div class="sidebar-box vacation active-box" id="vacationTrigger">
+                    <span class="icon">🏖️</span>
+                    <span class="label">休假设置</span>
+                </div>
+                <!-- ❌ 统计 - 无功能，保持灰色 -->
+                <div class="sidebar-box">
+                    <span class="icon">📈</span>
+                    <span class="label">统计</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== 主容器 ===== -->
+        <div class="app-container">
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-icon"
+                        style="background-image: url('images/史迪奇图标.jpg'); background-size: cover; background-position: center; font-size: 0; overflow: hidden;">
+                    </div>
+                    <div class="header-title">
+                        饮食日历
+                        <small>批量备餐 · 拖拽</small>
+                    </div>
+                </div>
+                <div class="header-stats">📊 <span class="num" id="totalMarkedDays">0</span> 天已记录</div>
+            </div>
+
+            <div class="calendar-header">
+                <button class="nav-btn" id="prevMonthBtn">‹</button>
+                <div class="month-year"><span class="month" id="monthDisplay">6</span> 月 <span
+                        id="yearDisplay">2026</span></div>
+                <button class="nav-btn" id="nextMonthBtn">›</button>
+            </div>
+
+            <div class="weekdays">
+                <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+            </div>
+
+            <div class="days-grid" id="daysGrid">
+
+            </div>
+
+            <div class="mark-panel">
+                <div class="panel-date" id="panelDate">
+                    <span class="date-icon">📅</span> 选择日期
+                    <span>未选中</span>
+                </div>
+                <div class="mark-options">
+                    <button class="mark-btn" data-type="meat" id="meatBtn">
+                        <span class="indicator"></span> 肉类
+                    </button>
+                    <button class="mark-btn" data-type="veg" id="vegBtn">
+                        <span class="indicator"></span> 蔬菜
+                    </button>
+                    <button class="mark-btn" data-type="rice" id="riceBtn">
+                        <span class="indicator"></span> 米饭
+                    </button>
+                    <button class="reset-btn" id="resetDayBtn">✕ 清空</button>
+                </div>
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-dot l-meat"></span> 肉类</span>
+                    <span class="legend-item"><span class="legend-dot l-veg"></span> 蔬菜</span>
+                    <span class="legend-item"><span class="legend-dot l-rice"></span> 米饭</span>
+                </div>
+                <div class="notice">
+                    <span>👆 点击日期选中</span>
+                    <span class="dot-sep"></span>
+                    <span>🔄 点击标记切换</span>
+                    <span class="dot-sep"></span>
+                    <span>✋ 拖拽标记到日期</span>
+                    <span class="dot-sep"></span>
+                    <span>💾 数据自动保存</span>
+                </div>
+            </div>
+            <!-- ===== 史迪奇装饰 ===== -->
+            <div class="stitch-deco stitch-hamburger"></div>
+            <div class="stitch-deco stitch-tea1"></div>
+            <div class="stitch-deco stitch-tea2"></div>
+            <div class="stitch-deco stitch-tea3"></div>
+            <div class="stitch-deco stitch-sushi"></div>
+            <div class="stitch-deco stitch-fries"></div>
+            <div class="stitch-deco stitch-starbucks"></div>
+        </div>
+
+        <!-- ===== 右侧边栏 ===== -->
+        <aside class="sidebar sidebar-right">
+            <div class="sidebar-title">📎 扩展</div>
+            <div class="sidebar-content">
+                <!-- ❌ 趋势 - 无功能，保持灰色 -->
+                <div class="sidebar-box">
+                    <span class="icon">📊</span>
+                    <span class="label">趋势</span>
+                </div>
+                <!-- ❌ 标签 - 无功能，保持灰色 -->
+                <div class="sidebar-box">
+                    <span class="icon">🔖</span>
+                    <span class="label">标签</span>
+                </div>
+                <!-- ✅ 清空当月 - 有功能 -->
+                <div class="sidebar-box active-box" id="clearMonthBtn">
+                    <span class="icon">🧹</span>
+                    <span class="label">清空当月</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- ===== 批量备餐浮窗 ===== -->
+    <div class="modal-overlay" id="mealPrepModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span class="icon">🍱</span> 批量备餐
+                </div>
+                <button class="modal-close" id="modalCloseBtn">✕</button>
+            </div>
+            <div class="modal-sub">从明天起自动排期 · 跳过已有标记和休假日期</div>
+
+            <div class="modal-body">
+                <div class="form-row">
+                    <span class="emoji">🥩</span>
+                    <span class="label">肉类</span>
+                    <input type="number" id="meatCount" value="" min="0" max="30" placeholder="0">
+                    <span class="unit">份</span>
+                </div>
+                <div class="form-row">
+                    <span class="emoji">🥬</span>
+                    <span class="label">蔬菜</span>
+                    <input type="number" id="vegCount" value="" min="0" max="30" placeholder="0">
+                    <span class="unit">份</span>
+                </div>
+                <div class="form-row">
+                    <span class="emoji">🍚</span>
+                    <span class="label">米饭</span>
+                    <input type="number" id="riceCount" value="" min="0" max="30" placeholder="0">
+                    <span class="unit">份</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" id="modalCancelBtn">取消</button>
+                <button class="btn-confirm" id="modalConfirmBtn">✓ 确定排期</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 休假浮窗 ===== -->
+    <div class="modal-overlay" id="vacationModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <span class="icon">🏖️</span> 休假管理
+                </div>
+                <button class="modal-close" id="vacationModalCloseBtn">✕</button>
+            </div>
+            <div class="modal-sub">点击日历上的日期切换休假状态 · 🚫 标记为休假</div>
+
+            <div class="vacation-calendar-container">
+                <div class="vacation-calendar-header">
+                    <button class="nav-btn vacation-nav-btn" id="vacationPrevMonthBtn">‹</button>
+                    <div class="month-year" id="vacationMonthDisplay"><span class="month" id="vacationMonth">6</span> 月
+                        <span id="vacationYear">2026</span>
+                    </div>
+                    <button class="nav-btn vacation-nav-btn" id="vacationNextMonthBtn">›</button>
+                </div>
+                <div class="weekdays">
+                    <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+                </div>
+                <div class="days-grid vacation-days-grid" id="vacationDaysGrid"></div>
+            </div>
+
+            <div class="vacation-hint">
+                💡 点击已标记为休假的日期可取消休假，该日数据将顺延到后一天
+            </div>
+
+            <div class="modal-actions" style="margin-top: 16px;">
+                <button class="btn-cancel" id="vacationModalCancelBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Toast 反馈 ===== -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ===== JS 引入 ===== -->
+    <script src="js/utils.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/drag.js"></script>
+    <script src="js/batch.js"></script>
+    <script src="js/vacation.js"></script>
+</body>
+
+</html>
